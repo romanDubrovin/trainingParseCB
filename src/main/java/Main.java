@@ -8,9 +8,12 @@ import java.util.List;
 
 public class Main  {
 
+
+
     final static String URL = "https://www.banki.ru/products/currency/cb/";
 
     public static void main(String[] args) throws IOException {
+
         List<TableData> tableData = new ArrayList<>();
 
         //try {
@@ -31,9 +34,17 @@ public class Main  {
 
         });
 
-        tableData.forEach(System.out::println);
+        //tableData.forEach(System.out::println);
 
-        System.out.println(tableData.get(0).getCentralBankRate());
+        System.out.println(tableData.get(0));
+
+
+        DisplayView displayView = new DisplayView();
+        displayView.addItems(tableData);
+        displayView.createDisplayView();
+
+
+
 
     }
 
