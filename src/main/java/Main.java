@@ -11,6 +11,7 @@ public class Main  {
     final static String URL = "https://www.banki.ru/products/currency/cb/";
 
     public static void main(String[] args) throws IOException {
+
         List<TableData> tableData = new ArrayList<>();
 
         //try {
@@ -28,12 +29,14 @@ public class Main  {
             String courseChange = trTableElement.child(4).text();
 
             tableData.add(new TableData(codeElement, currencyTitle, centralBankRate, courseChange));
-
         });
 
         tableData.forEach(System.out::println);
 
-        System.out.println(tableData.get(0).getCentralBankRate());
+        DisplayView displayView = new DisplayView(tableData);
+        displayView.addItems(tableData);
+        displayView.createDisplayView();
+        displayView.setInitRateField(tableData);
 
     }
 
