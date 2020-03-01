@@ -1,4 +1,7 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -34,7 +37,6 @@ public class DisplayView extends JFrame implements ItemListener{
     private JComboBox<String> codesList = new JComboBox<>();
 
     private JLabel rusLabel = new JLabel();
-
 
 
     public void createDisplayView() {
@@ -113,11 +115,30 @@ public class DisplayView extends JFrame implements ItemListener{
         container.add(result, resultGridBag);
         container.add(rusLabel, rusLabelGridBag);
 
-
         result.setEditable(false);
         rusLabel.setText("RUS");
 
         codesList.addItemListener(this);
+
+        DocumentListener listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                getResult();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                getResult();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                getResult();
+            }
+        };
+
+        amountToConvert.getDocument().addDocumentListener(listener);
+
 
     }
 
@@ -140,7 +161,24 @@ public class DisplayView extends JFrame implements ItemListener{
             } else {
                 courseChangeLabel.setForeground(Color.RED);
             }
+            getResult();
         }
+
+    }
+
+    public void getResult() {
+        String amount =  amountToConvert.getText();
+        if (amount.equals("")) {
+            result.setText("");
+            return;
+        }
+        String mutable = rateLabel.getText();
+
+        double resultAmount = Double.parseDouble(amount) * Double.parseDouble(mutable);
+
+        resultAmount = Math.round(resultAmount * 100);
+
+        result.setText(String.valueOf(resultAmount / 100));
     }
 
 }
