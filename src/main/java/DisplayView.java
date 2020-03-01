@@ -1,15 +1,16 @@
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
-public class DisplayView extends JFrame implements ItemListener{
+public class DisplayView extends JFrame implements ItemListener {
 
     private List<TableData> tableData;
+
 
     public DisplayView(List<TableData> tableData) {
         this.tableData = tableData;
@@ -20,7 +21,7 @@ public class DisplayView extends JFrame implements ItemListener{
         currencyTitleLabel.setText(tableData.get(0).getCurrencyTitle());
         courseChangeLabel.setText("   " + tableData.get(0).getCourseChange() + "   ");
         if (tableData.get(0).getCourseChange().contains("+")) {
-            courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1,0.6f));
+            courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1, 0.6f));
         } else {
             courseChangeLabel.setForeground(Color.RED);
         }
@@ -42,7 +43,7 @@ public class DisplayView extends JFrame implements ItemListener{
     public void createDisplayView() {
         this.setTitle("Конвертер валют");
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(400,200);
+        this.setSize(400, 200);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -115,6 +116,10 @@ public class DisplayView extends JFrame implements ItemListener{
         container.add(result, resultGridBag);
         container.add(rusLabel, rusLabelGridBag);
 
+
+        PlainDocument plainDocument = (PlainDocument) amountToConvert.getDocument();
+        plainDocument.setDocumentFilter(new DigitFilter());
+
         result.setEditable(false);
         rusLabel.setText("RUS");
 
@@ -139,7 +144,6 @@ public class DisplayView extends JFrame implements ItemListener{
 
         amountToConvert.getDocument().addDocumentListener(listener);
 
-
     }
 
     public void addItems(List<TableData> tableData) {
@@ -157,7 +161,7 @@ public class DisplayView extends JFrame implements ItemListener{
             currencyTitleLabel.setText(tableData.get(item).getCurrencyTitle());
             courseChangeLabel.setText("   " + tableData.get(item).getCourseChange() + "   ");
             if (tableData.get(item).getCourseChange().contains("+")) {
-                courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1,0.6f));
+                courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1, 0.6f));
             } else {
                 courseChangeLabel.setForeground(Color.RED);
             }
@@ -167,11 +171,12 @@ public class DisplayView extends JFrame implements ItemListener{
     }
 
     public void getResult() {
-        String amount =  amountToConvert.getText();
+        String amount = amountToConvert.getText();
         if (amount.equals("")) {
             result.setText("");
             return;
         }
+
         String mutable = rateLabel.getText();
 
         double resultAmount = Double.parseDouble(amount) * Double.parseDouble(mutable);
@@ -179,6 +184,8 @@ public class DisplayView extends JFrame implements ItemListener{
         resultAmount = Math.round(resultAmount * 100);
 
         result.setText(String.valueOf(resultAmount / 100));
+
+
     }
 
 }
