@@ -1,15 +1,16 @@
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
-public class DisplayView extends JFrame implements ItemListener{
+public class DisplayView extends JFrame implements ItemListener {
 
     private List<TableData> tableData;
+    private final static int LIMIT_DIGIT = 6;
 
     public DisplayView(List<TableData> tableData) {
         this.tableData = tableData;
@@ -19,8 +20,9 @@ public class DisplayView extends JFrame implements ItemListener{
         rateLabel.setText(tableData.get(0).getCentralBankRate());
         currencyTitleLabel.setText(tableData.get(0).getCurrencyTitle());
         courseChangeLabel.setText("   " + tableData.get(0).getCourseChange() + "   ");
+        copyCurrencyTitleField.setText(String.valueOf(codesList.getSelectedItem()));
         if (tableData.get(0).getCourseChange().contains("+")) {
-            courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1,0.6f));
+            courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1, 0.6f));
         } else {
             courseChangeLabel.setForeground(Color.RED);
         }
@@ -37,12 +39,14 @@ public class DisplayView extends JFrame implements ItemListener{
     private JComboBox<String> codesList = new JComboBox<>();
 
     private JLabel rusLabel = new JLabel();
+    private JLabel copyCurrencyTitleField = new JLabel();
 
+    PlainDocument plainDocument;
 
     public void createDisplayView() {
         this.setTitle("Конвертер валют");
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(400,200);
+        this.setSize(400, 200);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -102,10 +106,17 @@ public class DisplayView extends JFrame implements ItemListener{
         rusLabelGridBag.gridheight = 1;
         rusLabelGridBag.gridwidth = 2;
         rusLabelGridBag.gridx = 2;
-        rusLabelGridBag.gridy = 3;
+        rusLabelGridBag.gridy = 2;
         rusLabelGridBag.weightx = 0;
         rusLabelGridBag.weighty = 0;
 
+        GridBagConstraints copyCurrencyTitleBag = new GridBagConstraints();
+        copyCurrencyTitleBag.gridheight = 1;
+        copyCurrencyTitleBag.gridwidth = 2;
+        copyCurrencyTitleBag.gridx = 2;
+        copyCurrencyTitleBag.gridy = 3;
+        copyCurrencyTitleBag.weightx = 0;
+        copyCurrencyTitleBag.weighty = 0;
 
         container.add(rateLabel, rateLabelGridBag);
         container.add(codesList, codesListGridBag);
@@ -114,6 +125,10 @@ public class DisplayView extends JFrame implements ItemListener{
         container.add(amountToConvert, amountToConvertGridBag);
         container.add(result, resultGridBag);
         container.add(rusLabel, rusLabelGridBag);
+        container.add(copyCurrencyTitleField, copyCurrencyTitleBag);
+
+        plainDocument = (PlainDocument) amountToConvert.getDocument();
+        plainDocument.setDocumentFilter(new DigitFilter("\\d+"));
 
         result.setEditable(false);
         rusLabel.setText("RUS");
@@ -123,22 +138,21 @@ public class DisplayView extends JFrame implements ItemListener{
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
         };
 
         amountToConvert.getDocument().addDocumentListener(listener);
-
 
     }
 
@@ -156,29 +170,38 @@ public class DisplayView extends JFrame implements ItemListener{
             rateLabel.setText(tableData.get(item).getCentralBankRate());
             currencyTitleLabel.setText(tableData.get(item).getCurrencyTitle());
             courseChangeLabel.setText("   " + tableData.get(item).getCourseChange() + "   ");
+            copyCurrencyTitleField.setText(String.valueOf(codesList.getSelectedItem()));
             if (tableData.get(item).getCourseChange().contains("+")) {
-                courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1,0.6f));
+                courseChangeLabel.setForeground(Color.getHSBColor(0.35f, 1, 0.6f));
             } else {
                 courseChangeLabel.setForeground(Color.RED);
             }
-            getResult();
+            getResult(plainDocument);
         }
 
     }
 
-    public void getResult() {
-        String amount =  amountToConvert.getText();
+    public void getResult(PlainDocument plainDocument) {
+        String amount = amountToConvert.getText();
         if (amount.equals("")) {
             result.setText("");
             return;
         }
-        String mutable = rateLabel.getText();
+        if (amount.matches("\\d{0," + LIMIT_DIGIT + "}")) {
+            String mutable = rateLabel.getText();
 
-        double resultAmount = Double.parseDouble(amount) * Double.parseDouble(mutable);
+            int unitIndex = codesList.getSelectedIndex();
 
-        resultAmount = Math.round(resultAmount * 100);
+            double resultAmount = (Double.parseDouble(amount) * Double.parseDouble(mutable)) /
+                    Double.parseDouble(tableData.get(unitIndex).getUnitIndex());
 
-        result.setText(String.valueOf(resultAmount / 100));
+            resultAmount = Math.round(resultAmount * 100);
+
+            result.setText(String.valueOf(resultAmount / 100));
+            plainDocument.setDocumentFilter(new DigitFilter("\\d+"));
+        } else {
+            plainDocument.setDocumentFilter(new DigitFilter(""));
+        }
     }
 
 }
