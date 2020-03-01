@@ -27,7 +27,13 @@ public class DisplayView extends JFrame implements ItemListener{
     private JLabel currencyTitleLabel = new JLabel();
     private JLabel courseChangeLabel = new JLabel();
 
+    private JTextField amountToConvert = new JTextField(20);
+
+    private JTextField result = new JTextField(20);
+
     private JComboBox<String> codesList = new JComboBox<>();
+
+    private JLabel rusLabel = new JLabel();
 
 
 
@@ -74,11 +80,42 @@ public class DisplayView extends JFrame implements ItemListener{
         courseGridBag.weightx = 0;
         courseGridBag.weighty = 0;
 
+        GridBagConstraints amountToConvertGridBag = new GridBagConstraints();
+        amountToConvertGridBag.gridheight = 1;
+        amountToConvertGridBag.gridwidth = 2;
+        amountToConvertGridBag.gridx = 0;
+        amountToConvertGridBag.gridy = 2;
+        amountToConvertGridBag.weightx = 0;
+        amountToConvertGridBag.weighty = 0;
+
+        GridBagConstraints resultGridBag = new GridBagConstraints();
+        resultGridBag.gridheight = 1;
+        resultGridBag.gridwidth = 2;
+        resultGridBag.gridx = 0;
+        resultGridBag.gridy = 3;
+        resultGridBag.weightx = 0;
+        resultGridBag.weighty = 0;
+
+        GridBagConstraints rusLabelGridBag = new GridBagConstraints();
+        rusLabelGridBag.gridheight = 1;
+        rusLabelGridBag.gridwidth = 2;
+        rusLabelGridBag.gridx = 2;
+        rusLabelGridBag.gridy = 3;
+        rusLabelGridBag.weightx = 0;
+        rusLabelGridBag.weighty = 0;
+
 
         container.add(rateLabel, rateLabelGridBag);
         container.add(codesList, codesListGridBag);
         container.add(currencyTitleLabel, currencyTitleGridBag);
         container.add(courseChangeLabel, courseGridBag);
+        container.add(amountToConvert, amountToConvertGridBag);
+        container.add(result, resultGridBag);
+        container.add(rusLabel, rusLabelGridBag);
+
+
+        result.setEditable(false);
+        rusLabel.setText("RUS");
 
         codesList.addItemListener(this);
 
