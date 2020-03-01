@@ -25,14 +25,13 @@ public class Main  {
         trTableElements.forEach(trTableElement -> {
             String codeElement = trTableElement.attr("data-currency-code");
             String currencyTitle = trTableElement.attr("data-currency-name");
+            String unitIndex = trTableElement.child(1).text();
             String centralBankRate = trTableElement.child(3).text();
             String courseChange = trTableElement.child(4).text();
 
-            tableData.add(new TableData(codeElement, currencyTitle, centralBankRate, courseChange));
+            tableData.add(new TableData(codeElement, currencyTitle, unitIndex, centralBankRate, courseChange));
         });
-
-        tableData.forEach(System.out::println);
-
+        //tableData.forEach(System.out::println);
         DisplayView displayView = new DisplayView(tableData);
         displayView.addItems(tableData);
         displayView.createDisplayView();

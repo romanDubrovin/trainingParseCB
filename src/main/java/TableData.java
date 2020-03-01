@@ -4,10 +4,12 @@ public class TableData {
     private String currencyTitle;
     private String  centralBankRate;
     private String courseChange;
+    private String unitIndex;
 
-    public TableData(String code, String currencyTitle, String  centralBankRate, String courseChange) {
+    public TableData(String code, String currencyTitle, String unitIndex, String  centralBankRate, String courseChange) {
         this.code = code;
         this.currencyTitle = currencyTitle;
+        this.unitIndex = unitIndex;
         this.centralBankRate = centralBankRate;
         this.courseChange = courseChange;
     }
@@ -18,6 +20,10 @@ public class TableData {
 
     public String getCurrencyTitle() {
         return currencyTitle;
+    }
+
+    public String getUnitIndex() {
+        return unitIndex;
     }
 
     public String  getCentralBankRate() {
@@ -35,6 +41,7 @@ public class TableData {
                 ", currencyTitle='" + currencyTitle + '\'' +
                 ", centralBankRate='" + centralBankRate + '\'' +
                 ", courseChange='" + courseChange + '\'' +
+                ", unitIndex='" + unitIndex + '\'' +
                 '}';
     }
 }
