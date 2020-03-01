@@ -11,7 +11,6 @@ public class DisplayView extends JFrame implements ItemListener {
 
     private List<TableData> tableData;
 
-
     public DisplayView(List<TableData> tableData) {
         this.tableData = tableData;
     }
@@ -38,7 +37,7 @@ public class DisplayView extends JFrame implements ItemListener {
     private JComboBox<String> codesList = new JComboBox<>();
 
     private JLabel rusLabel = new JLabel();
-
+    PlainDocument plainDocument;
 
     public void createDisplayView() {
         this.setTitle("Конвертер валют");
@@ -116,9 +115,8 @@ public class DisplayView extends JFrame implements ItemListener {
         container.add(result, resultGridBag);
         container.add(rusLabel, rusLabelGridBag);
 
-
-        PlainDocument plainDocument = (PlainDocument) amountToConvert.getDocument();
-        plainDocument.setDocumentFilter(new DigitFilter());
+        plainDocument = (PlainDocument) amountToConvert.getDocument();
+        plainDocument.setDocumentFilter(new DigitFilter("\\d+"));
 
         result.setEditable(false);
         rusLabel.setText("RUS");
@@ -128,17 +126,17 @@ public class DisplayView extends JFrame implements ItemListener {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                getResult();
+                getResult(plainDocument);
             }
         };
 
@@ -165,25 +163,29 @@ public class DisplayView extends JFrame implements ItemListener {
             } else {
                 courseChangeLabel.setForeground(Color.RED);
             }
-            getResult();
+            getResult(plainDocument);
         }
 
     }
 
-    public void getResult() {
+    public void getResult(PlainDocument plainDocument) {
         String amount = amountToConvert.getText();
         if (amount.equals("")) {
             result.setText("");
             return;
         }
+        if (amount.matches("\\d{0,9}")) {
+            String mutable = rateLabel.getText();
 
-        String mutable = rateLabel.getText();
+            double resultAmount = Double.parseDouble(amount) * Double.parseDouble(mutable);
 
-        double resultAmount = Double.parseDouble(amount) * Double.parseDouble(mutable);
+            resultAmount = Math.round(resultAmount * 100);
 
-        resultAmount = Math.round(resultAmount * 100);
-
-        result.setText(String.valueOf(resultAmount / 100));
+            result.setText(String.valueOf(resultAmount / 100));
+            plainDocument.setDocumentFilter(new DigitFilter("\\d+"));
+        } else {
+            plainDocument.setDocumentFilter(new DigitFilter(""));
+        }
 
 
     }
